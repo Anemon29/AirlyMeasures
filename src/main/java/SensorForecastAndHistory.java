@@ -4,4 +4,16 @@ public class SensorForecastAndHistory {
     private SensorMeasurements measurements;
     private String tillDateTime;
 
+
+    public SensorMeasurements getMeasurements() {
+        return measurements;
+    }
+
+    public String getFromDateTime() {
+        return fromDateTime;
+    }
+
+    public String getTillDateTime() {
+        return tillDateTime;
+    }
 }

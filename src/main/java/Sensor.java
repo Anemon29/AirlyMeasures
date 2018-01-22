@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class Sensor {
@@ -7,5 +7,14 @@ public class Sensor {
     private List<SensorForecastAndHistory> forecast;
     private List<SensorForecastAndHistory> history;
 
+    public void formatData(){
+        currentMeasurements.formatData();
+        for (SensorForecastAndHistory sf : forecast){
+            sf.getMeasurements().formatData();
+        }
+        for (SensorForecastAndHistory sh : history){
+            sh.getMeasurements().formatData();
+        }
+    }
 
 }

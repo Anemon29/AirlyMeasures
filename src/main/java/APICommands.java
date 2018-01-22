@@ -1,7 +1,5 @@
 
-//import com.google.gson.Gson;
 import com.google.gson.Gson;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.json.*;
 
 import java.io.BufferedReader;
@@ -15,26 +13,25 @@ import java.net.URL;
 public class APICommands {
 
 
-    public void sensorInfo(String httpUrl) throws IOException{
+    public Sensor sensorInfo(String httpUrl, String apiKey) throws IOException{
         URL url = new URL(httpUrl);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-        BufferedReader jsonContent = setConnection(con);
+        BufferedReader jsonContent = setConnection(con, apiKey);
 
         Gson gson = new Gson();
         Sensor sensor = gson.fromJson(jsonContent, Sensor.class);
 
-        System.out.println(sensor);
-
+        return sensor;
     }
 
 
-    public String nearestSensor(String httpUrl) throws IOException{
+    public String nearestSensor(String httpUrl, String apiKey) throws IOException{
 
         URL url = new URL(httpUrl);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-        BufferedReader jsonContent = setConnection(con);
+        BufferedReader jsonContent = setConnection(con, apiKey);
 
         StringBuilder jsonString = new StringBuilder();
         String line;
@@ -45,27 +42,33 @@ public class APICommands {
 
         JSONObject object = new JSONObject(content);
 
-        Integer sensorID = object.getInt("id");
-        String nearestSensor = sensorID.toString();
 
-        jsonContent.close();
-        con.disconnect();
+        if (object.isNull("id")) {
+            throw new IllegalArgumentException("There wasn't a sensor found in this area, try with different arguments");
+        }
+        else {
+            Integer sensorID = object.getInt("id");
+            String nearestSensor = sensorID.toString();
 
-        return nearestSensor;
+            jsonContent.close();
+            con.disconnect();
+
+            return nearestSensor;
+        }
     }
 
 
-    public BufferedReader setConnection(HttpURLConnection con) throws IOException {
+    public BufferedReader setConnection(HttpURLConnection con, String apiKey) throws IOException {
 
         con.setRequestMethod("GET");
         con.setRequestProperty("Content-Type", "application/json");
 
-        con.setRequestProperty("apikey", "ad8dedfac54f4e54b915106b4bdc7a38");
+        con.setRequestProperty("apikey", apiKey);
 
         int status = con.getResponseCode();
 
-        if (status == 404) throw new ConnectException("");
-        else if (status == 403) throw new ConnectException("Forbidden");
+        if (status == 404) throw new ConnectException("Error 404");
+        else if (status == 403) throw new ConnectException("Input valid API-key to get access to data");
         else if (status == 401) throw new ConnectException("Unauthorised - input valid API-Key");
         else if (status == 400) throw new ConnectException("Input validation error");
         else if (status == 500) throw new ConnectException("Unexpected error");
