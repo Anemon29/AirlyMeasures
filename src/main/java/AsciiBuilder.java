@@ -1,10 +1,8 @@
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_LongestLine;
-import de.vandermeer.asciitable.CWC_LongestWord;
 import de.vandermeer.asciithemes.u8.U8_Grids;
 import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AsciiBuilder {
