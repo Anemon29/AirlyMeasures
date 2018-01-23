@@ -16,7 +16,9 @@ public class APICommands {
 
         jsonContent.mark(20000);
         if (!jsonContent.readLine().startsWith("{")){
-            throw new IllegalStateException("Error: API's response class is not a proper JSON. Try again. If the problem reoccurs, try later or with different arguments");
+            throw new IllegalStateException("Error: API's response class " +
+                    "is not a proper JSON. Try again. If the problem reoccurs, " +
+                    "try later or with different arguments");
         }
         jsonContent.reset();
 
