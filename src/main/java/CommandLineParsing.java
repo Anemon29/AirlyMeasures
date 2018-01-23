@@ -6,21 +6,20 @@ public class CommandLineParsing {
 
     private org.apache.commons.cli.CommandLineParser parser = new DefaultParser();
     private Options options = new Options();
-    private String apiKey = "ad8dedfac54f4e54b915106b4bdc7a38"; //default api key
-
+    private String apiKey = System.getenv("API_KEY");
 
     private Options addOptions(Options opt){
-        opt.addOption("lat","latitude", true, "Latitude of sensor");
-        opt.addOption("long","longitude", true, "Longitude of sensor");
+        opt.addOption("lat","latitude", true, "Latitude of the place on the map, where the nearest sensor will be searched for");
+        opt.addOption("long","longitude", true, "Longitude of the place on the map, where the nearest sensor will be searched for");
         opt.addOption("s","sensor-id", true, "ID of sensor you want to know about");
         opt.addOption("ak","api-key", true, "Input your api-key");
-        opt.addOption("hist","history", false, "Show history");
+        opt.addOption("hist","history", false, "Optional parameter, changes viewing style to a table of measurements in the last 24 hours");
         opt.addOption("h", "help", false, "Show help");
 
         return opt;
     }
 
-    public void parseCommands(String[] args) throws ParseException, IOException{
+    public void parseCommands(String[] args) throws ParseException, IOException, NoSuchFieldException{
         CommandLine cmd = parser.parse(addOptions(options), args);
 
         if(checkHelp(cmd)){
@@ -32,16 +31,16 @@ public class CommandLineParsing {
         }
 
         if(!cmd.hasOption("s") && !cmd.hasOption("lat")  && !cmd.hasOption("long")){
-            throw new ParseException("Too few arguments. You must provide sensor ID or latitude and longitude!");
+            throw new ParseException("Too few parameters. You must provide sensor ID or latitude and longitude! Add -h when running a program to see list of available parameters.");
         }
         else if(cmd.hasOption("s") && cmd.hasOption("lat")  && cmd.hasOption("long")){
-            throw new ParseException("Too many arguments. You must provide sensor ID or latitude and longitude!");
+            throw new ParseException("Too many parameters. You must provide sensor ID or latitude and longitude!");
         }
         else if(cmd.hasOption("lat") && !cmd.hasOption("long")){
-            throw new ParseException("Two arguments needed! Add a longitude parameter!");
+            throw new ParseException("Two parameters needed! Add a longitude parameter!");
         }
         else if (!cmd.hasOption("lat") && cmd.hasOption("long")){
-            throw new ParseException("Two arguments needed! Add a latitude parameter!");
+            throw new ParseException("Two parameters needed! Add a latitude parameter!");
         }
         else if (cmd.hasOption("lat") && cmd.hasOption("long")){
             inputLongLat(cmd);
@@ -62,37 +61,32 @@ public class CommandLineParsing {
         return false;
     }
 
-    private void inputLongLat(CommandLine cl) throws IOException{
+    private void inputLongLat(CommandLine cl) throws IOException, NoSuchFieldException{
 
             String latitude = getParam("lat", cl, "No latitude parameter");
             String longitude = getParam("long", cl, "No longitude parameter");
-            APICommands app = new APICommands();
-            String sensorID = app.nearestSensor("https://airapi.airly.eu/v1/nearestSensor/measurements?latitude=" + latitude +"&longitude="+ longitude +"&maxDistance=1000", apiKey);
+            APICommands api = new APICommands();
+            String sensorID = api.nearestSensor("https://airapi.airly.eu/v1/nearestSensor/measurements?latitude=" + latitude +"&longitude="+ longitude +"&maxDistance=1000", apiKey);
             inputSensorID(cl, sensorID);
 
     }
 
-    private void inputSensorID(CommandLine cl, String sensorID){
-        APICommands app = new APICommands();
-        try {
-            Sensor sensor = app.sensorInfo("https://airapi.airly.eu/v1/sensor/measurements?sensorId=" + sensorID, apiKey);
-            sensor.formatData();
-            AsciiBuilder asciiBuilder = new AsciiBuilder();
-            if (cl.hasOption("hist")) {
-                String output = asciiBuilder.measurementsHistory(sensor);
-                System.out.println(output);
-            } else {
-                if (sensor.getCurrentMeasurements().getAirQualityIndex() == 0)
-                    throw new NoSuchFieldException("Sensor doesn't have current measurements!");
-                String output = asciiBuilder.currentMeasurements(sensor);
-                System.out.println(output);
+    private void inputSensorID(CommandLine cl, String sensorID) throws IOException, NoSuchFieldException{
+
+        APICommands api = new APICommands();
+        Sensor sensor = api.sensorInfo("https://airapi.airly.eu/v1/sensor/measurements?sensorId=" + sensorID, apiKey);
+        sensor.formatData();
+        AsciiBuilder asciiBuilder = new AsciiBuilder();
+        if (cl.hasOption("hist")) {
+            String output = asciiBuilder.measurementsHistory(sensor);
+            System.out.println(output);
+        }
+        else {
+            if (sensor.getCurrentMeasurements().getAirQualityIndex() == 0) {
+                throw new NoSuchFieldException("Sensor doesn't have current measurements!");
             }
-        }
-        catch (IllegalStateException ex){
-            System.out.println("Error parsing JSON, try again");
-        }
-        catch (Exception ex){
-            System.out.println(ex.getMessage());
+            String output = asciiBuilder.currentMeasurements(sensor);
+            System.out.println(output);
         }
     }
 

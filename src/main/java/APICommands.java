@@ -1,23 +1,24 @@
 
 import com.google.gson.Gson;
 import org.json.*;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.*;
+import java.net.*;
 
 
 public class APICommands {
 
 
     public Sensor sensorInfo(String httpUrl, String apiKey) throws IOException{
+
         URL url = new URL(httpUrl);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
         BufferedReader jsonContent = setConnection(con, apiKey);
+
+        jsonContent.mark(20000);
+        if (!jsonContent.readLine().startsWith("{")){
+            throw new IllegalStateException("Error: API's response class is not a proper JSON. Try again. If the problem reoccurs, try later or with different arguments");
+        }
+        jsonContent.reset();
 
         Gson gson = new Gson();
         Sensor sensor = gson.fromJson(jsonContent, Sensor.class);
@@ -33,7 +34,6 @@ public class APICommands {
 
         URL url = new URL(httpUrl);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
         BufferedReader jsonContent = setConnection(con, apiKey);
 
         StringBuilder jsonString = new StringBuilder();
@@ -42,9 +42,7 @@ public class APICommands {
             jsonString.append(line);
         }
         String content = jsonString.toString();
-
         JSONObject object = new JSONObject(content);
-
 
         if (object.isNull("id")) {
             throw new IllegalArgumentException("There wasn't a sensor found in this area, try with different arguments");
@@ -55,21 +53,18 @@ public class APICommands {
 
             jsonContent.close();
             con.disconnect();
-
             return nearestSensor;
         }
     }
 
 
-    public BufferedReader setConnection(HttpURLConnection con, String apiKey) throws IOException {
+    private BufferedReader setConnection(HttpURLConnection con, String apiKey) throws IOException {
 
         con.setRequestMethod("GET");
         con.setRequestProperty("Content-Type", "application/json");
-
         con.setRequestProperty("apikey", apiKey);
 
         int status = con.getResponseCode();
-
         if (status == 404) throw new ConnectException("Error 404 - Not found");
         else if (status == 403) throw new ConnectException("Input valid API-key to get access to data");
         else if (status == 401) throw new ConnectException("Unauthorised - input valid API-Key");
@@ -78,10 +73,5 @@ public class APICommands {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         return in;
-
-
     }
-
-
-
 }
