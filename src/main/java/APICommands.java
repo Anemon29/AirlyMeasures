@@ -22,7 +22,10 @@ public class APICommands {
         Gson gson = new Gson();
         Sensor sensor = gson.fromJson(jsonContent, Sensor.class);
 
+        jsonContent.close();
+        con.disconnect();
         return sensor;
+
     }
 
 
@@ -67,7 +70,7 @@ public class APICommands {
 
         int status = con.getResponseCode();
 
-        if (status == 404) throw new ConnectException("Error 404");
+        if (status == 404) throw new ConnectException("Error 404 - Not found");
         else if (status == 403) throw new ConnectException("Input valid API-key to get access to data");
         else if (status == 401) throw new ConnectException("Unauthorised - input valid API-Key");
         else if (status == 400) throw new ConnectException("Input validation error");

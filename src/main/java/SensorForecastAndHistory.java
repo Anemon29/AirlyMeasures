@@ -16,4 +16,9 @@ public class SensorForecastAndHistory {
     public String getTillDateTime() {
         return tillDateTime;
     }
+
+    public void formatData(){
+        this.fromDateTime = fromDateTime.substring(11,19);
+        this.tillDateTime = tillDateTime.substring(11,19);
+    }
 }
