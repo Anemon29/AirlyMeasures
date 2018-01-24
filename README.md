@@ -15,4 +15,4 @@ If chosen program argument is sensor(-s, --sensor-id):
 Adding -hist program argument is optional and it changes the way data is displayed. Instead of current measurements, you will get a big table of measurements from the last 24 hours.
 
 API-key, which is required for the program to work, is being read from the enviroment variables (under the key "API-KEY").
-Another way to authorise yourself is to provide own airly API-key by putting -ak <Your API-KEY> program argument.
+Another way to authorise yourself is to provide own airly API-key by putting program argument "-ak " with your own API-key
