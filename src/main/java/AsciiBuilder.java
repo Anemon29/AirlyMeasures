@@ -8,21 +8,21 @@ import java.util.List;
 public class AsciiBuilder {
 
 
-    public String currentMeasurements(Sensor sensor){
+    public String currentMeasurements(Sensor sensor) {
 
         SensorMeasurements sm = sensor.getCurrentMeasurements();
         AsciiTable table = new AsciiTable();
 
         table.addRule();
-        addRowWithRule(table,null, "Current measurements from a sensor:");
-        addRowWithRule(table,"Quality index", whatToDisplay(sm.getAirQualityIndex(), ""));
-        addRowWithRule(table,"Pollution level", whatToDisplay(sm.getPollutionLevel() , "/6"));
-        addRowWithRule(table,"Humidity", whatToDisplay(sm.getHumidity() , " %"));
-        addRowWithRule(table,"PM 1.0", whatToDisplay(sm.getPm1() , " μg/m3"));
-        addRowWithRule(table,"PM 2.5", whatToDisplay(sm.getPm25() , " μg/m3"));
-        addRowWithRule(table,"PM 10", whatToDisplay(sm.getPm10() , " μg/m3"));
-        addRowWithRule(table,"Pressure", whatToDisplay(sm.getPressure() , " hPa"));
-        addRowWithRule(table,"Temperature", whatToDisplay(sm.getTemperature() , "°C"));
+        addRowWithRule(table, null, "Current measurements from a sensor:");
+        addRowWithRule(table, "Quality index", whatToDisplay(sm.getAirQualityIndex(), ""));
+        addRowWithRule(table, "Pollution level", whatToDisplay(sm.getPollutionLevel(), "/6"));
+        addRowWithRule(table, "Humidity", whatToDisplay(sm.getHumidity(), " %"));
+        addRowWithRule(table, "PM 1.0", whatToDisplay(sm.getPm1(), " μg/m3"));
+        addRowWithRule(table, "PM 2.5", whatToDisplay(sm.getPm25(), " μg/m3"));
+        addRowWithRule(table, "PM 10", whatToDisplay(sm.getPm10(), " μg/m3"));
+        addRowWithRule(table, "Pressure", whatToDisplay(sm.getPressure(), " hPa"));
+        addRowWithRule(table, "Temperature", whatToDisplay(sm.getTemperature(), "°C"));
 
         table = setAppearance(table);
         table.getContext().setWidth(50);
@@ -30,19 +30,19 @@ public class AsciiBuilder {
         return table.render();
     }
 
-    public String measurementsHistory(Sensor sensor){
+    public String measurementsHistory(Sensor sensor) {
         List<SensorForecastAndHistory> history = sensor.getHistory();
         AsciiTable table = new AsciiTable();
         table.addRule();
-        addRowWithRule(table,null, null, null, null, null, "Last 24 hours:");
-        addRowWithRule(table,"From hour","Till hour","Quality index","Pollution level","PM 2.5",
+        addRowWithRule(table, null, null, null, null, null, "Last 24 hours:");
+        addRowWithRule(table, "From hour", "Till hour", "Quality index", "Pollution level", "PM 2.5",
                 "PM 10");
 
-        for (SensorForecastAndHistory sh : history){
+        for (SensorForecastAndHistory sh : history) {
             SensorMeasurements sm = sh.getMeasurements();
             addRowWithRule(table, sh.getFromDateTime(), sh.getTillDateTime(),
-                    whatToDisplay(sm.getAirQualityIndex(), ""), whatToDisplay(sm.getPollutionLevel(),"/6"),
-                    whatToDisplay(sm.getPm25()," μg/m3"), whatToDisplay(sm.getPm10()," μg/m3"));
+                    whatToDisplay(sm.getAirQualityIndex(), ""), whatToDisplay(sm.getPollutionLevel(), "/6"),
+                    whatToDisplay(sm.getPm25(), " μg/m3"), whatToDisplay(sm.getPm10(), " μg/m3"));
 
         }
         table = setAppearance(table);
@@ -50,7 +50,7 @@ public class AsciiBuilder {
         return table.render();
     }
 
-    private AsciiTable setAppearance(AsciiTable table){
+    private AsciiTable setAppearance(AsciiTable table) {
         table.setTextAlignment(TextAlignment.CENTER);
         table.getContext().setFrameTopBottomMargin(2);
         table.getContext().setFrameLeftRightMargin(4);
@@ -58,20 +58,20 @@ public class AsciiBuilder {
         return table;
     }
 
-    private void addRowWithRule(AsciiTable table,Object obj1, Object obj2){
+    private void addRowWithRule(AsciiTable table, Object obj1, Object obj2) {
         table.addRow(obj1, obj2);
         table.addRule();
     }
-    private void addRowWithRule(AsciiTable table,Object obj1, Object obj2,Object obj3,Object obj4,Object obj5,Object obj6){
-        table.addRow(obj1,obj2,obj3,obj4,obj5,obj6);
+
+    private void addRowWithRule(AsciiTable table, Object obj1, Object obj2, Object obj3, Object obj4, Object obj5, Object obj6) {
+        table.addRow(obj1, obj2, obj3, obj4, obj5, obj6);
         table.addRule();
     }
 
-    private Object whatToDisplay(double input, String additional){
-        if (input == 0){
+    private Object whatToDisplay(double input, String additional) {
+        if (input == 0) {
             return "No data";
-        }
-        else return ((int) input + additional);
+        } else return ((int) input + additional);
     }
 
 }
