@@ -22,7 +22,7 @@ public class AsciiBuilder {
         addRowWithRule(table, "PM 2.5", whatToDisplay(sm.getPm25(), " μg/m3"));
         addRowWithRule(table, "PM 10", whatToDisplay(sm.getPm10(), " μg/m3"));
         addRowWithRule(table, "Pressure", whatToDisplay(sm.getPressure(), " hPa"));
-        addRowWithRule(table, "Temperature", whatToDisplay(sm.getTemperature(), "°C"));
+        addRowWithRule(table, "Temperature", whatToDisplayTemp(sm.getTemperature()));
 
         table = setAppearance(table);
         table.getContext().setWidth(50);
@@ -72,6 +72,12 @@ public class AsciiBuilder {
         if (input == 0) {
             return "No data";
         } else return ((int) input + additional);
+    }
+
+    private Object whatToDisplayTemp(double temp){
+        if (temp == 100){
+            return "No data";
+        } else return ((int) temp + "°C");
     }
 
 }
