@@ -2,7 +2,7 @@ import org.apache.commons.cli.*;
 
 import java.io.IOException;
 
-public class CommandLineParsing {
+public class CommandLineParse {
 
     private org.apache.commons.cli.CommandLineParser parser = new DefaultParser();
     private Options options = new Options();
@@ -22,7 +22,7 @@ public class CommandLineParsing {
         return opt;
     }
 
-    public void parseCommands(String[] args) throws ParseException, IOException, NoSuchFieldException{
+    public void parseCommands(String[] args) throws ParseException, IOException{
         CommandLine cmd = parser.parse(addOptions(options), args);
 
         if(checkHelp(cmd)){
@@ -65,7 +65,7 @@ public class CommandLineParsing {
         return false;
     }
 
-    private void inputLongLat(CommandLine cl) throws IOException, NoSuchFieldException{
+    private void inputLongLat(CommandLine cl) throws IOException{
 
             String latitude = getParam("lat", cl, "No latitude parameter");
             String longitude = getParam("long", cl, "No longitude parameter");
@@ -77,7 +77,7 @@ public class CommandLineParsing {
 
     }
 
-    private void inputSensorID(CommandLine cl, String sensorID) throws IOException, NoSuchFieldException{
+    private void inputSensorID(CommandLine cl, String sensorID) throws IOException{
 
         APICommands api = new APICommands();
         Sensor sensor = api.sensorInfo("https://airapi.airly.eu/v1/" +
@@ -89,9 +89,6 @@ public class CommandLineParsing {
             System.out.println(output);
         }
         else {
-            if (sensor.getCurrentMeasurements().getAirQualityIndex() == 0) {
-                throw new NoSuchFieldException("Sensor doesn't have current measurements!");
-            }
             String output = asciiBuilder.currentMeasurements(sensor);
             System.out.println(output);
         }
