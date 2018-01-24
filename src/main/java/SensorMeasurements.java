@@ -6,7 +6,7 @@ public class SensorMeasurements {
     private double pm10;
     private double pressure;
     private double humidity;
-    private double temperature;
+    private double temperature = 100;   //Default value essential to verify if API provided valid data
     private int pollutionLevel;
 
 
