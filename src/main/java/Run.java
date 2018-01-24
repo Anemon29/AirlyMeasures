@@ -3,7 +3,7 @@ public class Run {
     public static void main(String[] args){
 
         try {
-            CommandLineParsing commandLineParser = new CommandLineParsing();
+            CommandLineParse commandLineParser = new CommandLineParse();
             commandLineParser.parseCommands(args);
         }
         catch (Exception ex){
