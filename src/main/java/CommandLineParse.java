@@ -66,7 +66,6 @@ public class CommandLineParse {
     }
 
     private void inputLongLat(CommandLine cl) throws IOException{
-
             String latitude = getParam("lat", cl, "No latitude parameter");
             String longitude = getParam("long", cl, "No longitude parameter");
             APICommands api = new APICommands();

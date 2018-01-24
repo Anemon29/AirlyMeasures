@@ -1,4 +1,3 @@
-
 import com.google.gson.Gson;
 import org.json.*;
 import java.io.*;
@@ -16,6 +15,7 @@ public class APICommands {
 
         jsonContent.mark(20000);
         if (!jsonContent.readLine().startsWith("{")){
+            closeAll(jsonContent,con);
             throw new IllegalStateException("Error: API's response class " +
                     "is not a proper JSON. Try again. If the problem reoccurs, " +
                     "try later or with different arguments");
@@ -25,8 +25,7 @@ public class APICommands {
         Gson gson = new Gson();
         Sensor sensor = gson.fromJson(jsonContent, Sensor.class);
 
-        jsonContent.close();
-        con.disconnect();
+        closeAll(jsonContent, con);
         return sensor;
 
     }
@@ -47,14 +46,14 @@ public class APICommands {
         JSONObject object = new JSONObject(content);
 
         if (object.isNull("id")) {
+            closeAll(jsonContent, con);
             throw new IllegalArgumentException("There wasn't a sensor found in this area, try with different arguments");
         }
         else {
             Integer sensorID = object.getInt("id");
             String nearestSensor = sensorID.toString();
 
-            jsonContent.close();
-            con.disconnect();
+            closeAll(jsonContent,con);
             return nearestSensor;
         }
     }
@@ -67,13 +66,24 @@ public class APICommands {
         con.setRequestProperty("apikey", apiKey);
 
         int status = con.getResponseCode();
-        if (status == 404) throw new ConnectException("Error 404 - Not found");
-        else if (status == 403) throw new ConnectException("Input valid API-key to get access to data");
-        else if (status == 401) throw new ConnectException("Unauthorised - input valid API-Key");
-        else if (status == 400) throw new ConnectException("Input validation error");
-        else if (status == 500) throw new ConnectException("Unexpected error");
+        if (status == 404) connectionException(con,"Error 404 - Not found");
+        else if (status == 403) connectionException(con,"Input valid API-key to get access to data");
+        else if (status == 401) connectionException(con,"Unauthorised - input valid API-Key");
+        else if (status == 400) connectionException(con,"Input validation error");
+        else if (status == 500) connectionException(con,"Unexpected error");
 
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         return in;
     }
+
+    private void closeAll(BufferedReader bf, HttpURLConnection con) throws IOException{
+        bf.close();
+        con.disconnect();
+    }
+
+    private void connectionException(HttpURLConnection con, String message) throws ConnectException{
+        con.disconnect();
+        throw new ConnectException(message);
+    }
+
 }
