@@ -7,13 +7,13 @@ public class Sensor {
     private List<SensorForecastAndHistory> forecast;
     private List<SensorForecastAndHistory> history;
 
-    public void formatData(){
+    public void formatData() {
         currentMeasurements.formatData();
-        for (SensorForecastAndHistory sf : forecast){
+        for (SensorForecastAndHistory sf : forecast) {
             sf.formatData();
             sf.getMeasurements().formatData();
         }
-        for (SensorForecastAndHistory sh : history){
+        for (SensorForecastAndHistory sh : history) {
             sh.formatData();
             sh.getMeasurements().formatData();
         }

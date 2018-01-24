@@ -42,7 +42,7 @@ public class SensorMeasurements {
         return temperature;
     }
 
-    public void formatData(){
+    public void formatData() {
         this.airQualityIndex = Math.round(airQualityIndex);
         this.humidity = Math.round(humidity);
         this.pm1 = Math.round(pm1);
